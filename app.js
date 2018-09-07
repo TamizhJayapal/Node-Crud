@@ -1,33 +1,37 @@
-
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser');
-//var http = require('http');
-var mysql = require('mysql');
-
-//var myConnection = require('express-myconnection')
-//app.use(myConnection(mysql, dbOption, 'pool'))
-var pool = mysql.createPool({    
-	port:'3000',
-	user:'root',
-	password:'',
-	database:'test',
-	queueLimit : 0, 
-	connectionLimit : 0
-
-})
-
+var express = require('express')
+var app = express()
+var mysql = require('mysql')
+var myConnection  = require('express-myconnection')
+var config = require('./config')
+var dbOptions = {
+	host:	  'localhost',
+	user: 	  config.database.user,
+	password: config.database.password,
+	port: 	  config.database.port, 
+	database: config.database.db
+}
+app.use(myConnection(mysql, dbOptions, 'pool'))
 app.set('view engine', 'ejs')
+var index = require('./routes/index')
+var users = require('./routes/users')
 
-app.use(bodyParser.urlencoded({extended: true}))
+var bodyParser = require('body-parser')
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var methodOverride = require('method-override')
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    var method = req.body._method
+    delete req.body._method
+    return method
+  }
+}))
+ 
 
-app.use('/', index);
-app.use('/list',users)
+app.use('/', index)
+app.use('/users', users)
 
- app.listen(3000, function(){
-    console.log('Server running at port 3000: http://localhost:3000');
+app.listen(2500, function(){
+	console.log('Server running at port 2500')
 })
