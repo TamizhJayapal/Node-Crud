@@ -32,6 +32,6 @@ app.use(methodOverride(function (req, res) {
 app.use('/', index)
 app.use('/users', users)
 
-app.listen(2500, function(){
-	console.log('Server running at port 2500')
+app.listen(3000, function(){
+	console.log('Server running at port 3000')
 })
